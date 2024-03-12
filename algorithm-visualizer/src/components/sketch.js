@@ -3,7 +3,7 @@ function sketch(p5) {
   const separation = 15;
   const alignment = 50;
   const cohesion = 50;
-  const numberOfBoids = 100;
+  const numberOfBoids = 200;
 
   /**
    * A majority of this code is adopted from the example provided by p5 via link:
