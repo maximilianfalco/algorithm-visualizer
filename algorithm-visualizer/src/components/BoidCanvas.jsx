@@ -1,12 +1,12 @@
 import React from 'react'
 import { ReactP5Wrapper } from 'react-p5-wrapper'
 import sketch from './sketch'
-import { Box, Typography } from '@mui/material'
+import { Box, Stack, Typography } from '@mui/material'
 
 const BoidCanvas = () => {
   
   return (
-    <Box className='flex justify-center p-10'>
+    <Stack className='px-6 pb-6 pt-1'>
       <Box>
         <p className='text-4xl mb-2'>
           Boids Algorithm
@@ -20,9 +20,10 @@ const BoidCanvas = () => {
         style={{
           display: 'flex',
           justifyContent: 'center',
+          marginTop: '5',
         }}
       />
-    </Box>
+    </Stack>
   )
 }
 
