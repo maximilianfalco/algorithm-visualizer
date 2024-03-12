@@ -1,15 +1,20 @@
 {
   "files": {
-    "main.css": "/algorithm-visualizer/static/css/main.207b61a1.css",
-    "main.js": "/algorithm-visualizer/static/js/main.720adb6e.js",
+    "main.css": "/algorithm-visualizer/static/css/main.89050154.css",
+    "main.js": "/algorithm-visualizer/static/js/main.d9dd0ebf.js",
     "static/js/453.16ab2dd2.chunk.js": "/algorithm-visualizer/static/js/453.16ab2dd2.chunk.js",
+    "static/media/Metropolis-Bold.otf": "/algorithm-visualizer/static/media/Metropolis-Bold.c5e04fafcff6fc79cd76.otf",
+    "static/media/Metropolis-SemiBold.otf": "/algorithm-visualizer/static/media/Metropolis-SemiBold.5e856013947c22fbcdf4.otf",
+    "static/media/Metropolis-Medium.otf": "/algorithm-visualizer/static/media/Metropolis-Medium.cdcce86268fb4a504ff5.otf",
+    "static/media/Metropolis-Regular.otf": "/algorithm-visualizer/static/media/Metropolis-Regular.67a1988d7b65b0aaa16d.otf",
+    "static/media/linkedin_icon.png": "/algorithm-visualizer/static/media/linkedin_icon.73ca25087df5a0d8500e.png",
     "index.html": "/algorithm-visualizer/index.html",
-    "main.207b61a1.css.map": "/algorithm-visualizer/static/css/main.207b61a1.css.map",
-    "main.720adb6e.js.map": "/algorithm-visualizer/static/js/main.720adb6e.js.map",
+    "main.89050154.css.map": "/algorithm-visualizer/static/css/main.89050154.css.map",
+    "main.d9dd0ebf.js.map": "/algorithm-visualizer/static/js/main.d9dd0ebf.js.map",
     "453.16ab2dd2.chunk.js.map": "/algorithm-visualizer/static/js/453.16ab2dd2.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.207b61a1.css",
-    "static/js/main.720adb6e.js"
+    "static/css/main.89050154.css",
+    "static/js/main.d9dd0ebf.js"
   ]
 }
