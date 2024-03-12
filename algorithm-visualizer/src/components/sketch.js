@@ -1,4 +1,4 @@
-function sketch(p5, count, sep, ali, coh) {
+function sketch(p5) {
   let flock;
   const separation = 15;
   const alignment = 50;
@@ -13,8 +13,8 @@ function sketch(p5, count, sep, ali, coh) {
   p5.setup = () => {
     var cnv = p5.createCanvas(700, 400);
     var x = (window.innerWidth - p5.width) / 2;
-    var y = (window.innerHeight - p5.height) / 2;
-    cnv.position(x, y);
+    // var y = (window.innerHeight - p5.height) / 2;
+    cnv.position(x, cnv.y);
 
     flock = new Flock();
     for (let i = 0; i < numberOfBoids; i++) {

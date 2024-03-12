@@ -15,3 +15,20 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+@font-face {
+  font-family: 'Metropolis Bold';
+  src: url('fonts/metropolis/Metropolis-Bold.otf');
+}
+@font-face {
+  font-family: 'Metropolis SemiBold';
+  src: url('fonts/metropolis/Metropolis-SemiBold.otf');
+}
+@font-face {
+  font-family: 'Metropolis Medium';
+  src: url('fonts/metropolis/Metropolis-Medium.otf');
+}
+@font-face {
+  font-family: 'Metropolis Regular';
+  src: url('fonts/metropolis/Metropolis-Regular.otf');
+}
