@@ -2,7 +2,7 @@ import { Box } from '@mui/material'
 import React from 'react'
 import BoidCanvas from '../components/BoidCanvas'
 
-const Page1 = () => {
+const NatureOfCode = () => {
   return (
     <Box>
       <BoidCanvas/>
@@ -10,4 +10,4 @@ const Page1 = () => {
   )
 }
 
-export default Page1
+export default NatureOfCode

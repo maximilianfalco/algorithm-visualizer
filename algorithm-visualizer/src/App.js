@@ -2,22 +2,25 @@ import './App.css';
 import NavBar from './components/NavBar';
 import { Box } from '@mui/material'
 import { Routes, Route } from 'react-router-dom';
-import Page1 from './pages/Page1';
-import Page2 from './pages/Page2';
+import Home from './pages/Home';
+import Pathfinding from './pages/Pathfinding';
+import NatureOfCode from './pages/NatureOfCode';
 
 export const fixedURL = '/algorithm-visualizer'
 
 function App() {
   return (
     <div className="App">
-      <Box className='h-screen'>
-        <Box className='h-12'>
+      <Box className='h-screen flex flex-wrap justify-center'>
+        <Box className='h-16 w-full fixed'>
           <NavBar/>
         </Box>
-        <Box className='h-dvh'>
+        {/* Page Content */}
+        <Box className='mt-16 flex-grow'>
           <Routes>
-            <Route path={`${fixedURL}/`} element={<Page1/>}/>
-            <Route path={`${fixedURL}/2`} element={<Page2/>}/>
+            <Route path={`${fixedURL}/`} element={<Home/>}/>
+            <Route path={`${fixedURL}/natureofcode`} element={<NatureOfCode/>}/>
+            <Route path={`${fixedURL}/pathfinding`} element={<Pathfinding/>}/>
           </Routes>
         </Box>
       </Box>

@@ -6,7 +6,7 @@ function sketch(p5, count, sep, ali, coh) {
   const numberOfBoids = 100;
 
   /**
-   * A majority of this code is based on the example provided by p5 via link:
+   * A majority of this code is adopted from the example provided by p5 via link:
    * https://p5js.org/examples/simulate-flocking.html
    */
 
@@ -15,9 +15,6 @@ function sketch(p5, count, sep, ali, coh) {
     var x = (window.innerWidth - p5.width) / 2;
     var y = (window.innerHeight - p5.height) / 2;
     cnv.position(x, y);
-
-    let s = 'The quick brown fox jumps over the lazy dog.';
-    p5.text(s, 10, 10, 70, 80);
 
     flock = new Flock();
     for (let i = 0; i < numberOfBoids; i++) {
@@ -107,7 +104,6 @@ function sketch(p5, count, sep, ali, coh) {
     return steer;
   }
 
-  /* Self Made */
   Boid.prototype.flee = function(target) {
     let desired = p5.constructor.Vector.sub(target,this.position); 
     desired.normalize();
