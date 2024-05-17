@@ -17,8 +17,6 @@ var cnv;
 function setup(p5) {
   return () => {
     cnv = p5.createCanvas(700, 400);
-    var x = (window.innerWidth - p5.width) / 2;
-    cnv.position(x, cnv.y);
 
     flock = new Flock();
     for (let i = 0; i < numberOfBoids; i++) {
@@ -31,6 +29,8 @@ function draw(p5, props) {
   return () => {
     const { running } = props;
     p5.background(51);
+    var x = (window.innerWidth - p5.width) / 2;
+    cnv.position(x, cnv.y);
     let target = p5.createVector(p5.mouseX, p5.mouseY);
     if (p5.mouseIsPressed === true) {
       flock.run(target, true, p5, running);
