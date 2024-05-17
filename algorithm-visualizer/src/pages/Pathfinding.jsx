@@ -1,76 +1,312 @@
-import { Box, Button, Stack } from '@mui/material'
-import React, { useRef, useState } from 'react'
+import { Box, Stack, ToggleButton, ToggleButtonGroup, Tooltip } from '@mui/material'
+import React, { useEffect, useRef, useState } from 'react'
+import useStateRef from 'react-usestateref'
+import FlagIcon from '@mui/icons-material/Flag';
+import ShieldIcon from '@mui/icons-material/Shield';
+import GppBadIcon from '@mui/icons-material/GppBad';
+import ChangeCircleRoundedIcon from '@mui/icons-material/ChangeCircleRounded';
+import IconButton from '@mui/material/IconButton';
+
 import Tile from '../components/Tile'
+import useWindowDimensions from '../components/CustomHooks'
+import { ANIMATIONDELAY, MAXBOARDHEIGHT, NETTILESIZE } from '../components/Constants'
+import FunctionButton from '../components/FunctionButton'
+import sleep from '../components/HelperFunctions';
+
 
 const Pathfinding = () => {
-  const count = 100;
+  // Calculating size of tile board
+  const { height, width } = useWindowDimensions();
+  const [spawned, setSpawned] = useState(false);
+  const [rowLength, setRowLength] = useState(0);
+  const [tileCount, setTileCount] = useState(0);
+  useEffect(() => {
+    const rows = Math.floor((0.8 * width)/ NETTILESIZE);
+    const cols = Math.floor(MAXBOARDHEIGHT/ NETTILESIZE);
+    const tiles = rows * cols;
+
+    setRowLength(rows);
+    setTileCount(tiles)
+  }, [height, width])
+  
+  // Setting up the board
   const refs = useRef({});
   const [tiles, setTiles] = useState([]);
-  let visited = [];
-
+  const [mode, setMode] = useState('start');
+  const [start, setStart] = useState(-1);
+  const [end, setEnd] = useState(-1);
+  const [running, setRunning, runningRef] = useStateRef(false);
+  
   const handleSpawnTiles = () => {
+    setSpawned(true);
     const temp = [];
-    for(let i = 0; i < count; i++) {
+    for(let i = 0; i < tileCount; i++) {
       temp.push(i);
     }
     setTiles(temp);
   }
 
-  const addToQueue = (index) => {
-    if (visited.includes(index)) return;
-    refs.current[index].addToQueue();
+  useEffect(() => {
+    if (spawned && tiles.length !== tileCount) {
+      handleSpawnTiles();
+    }
+  }, [tileCount, spawned, tiles])
+  
+  /**
+   * Changes the mode of customising the tile board
+   * @param {*} event 
+   * @param {String} newMode 
+   */
+  const handleMode = (event, newMode) => {
+    setMode(newMode);
   }
-
-  const handleVisit = (index) => {
-    if (visited.includes(index)) return;
-    refs.current[index].visit();
-    visited.push(index);
-
-    if (index - 10 >= 0) {
-      addToQueue(index - 10);
-    }
-    if (index + 10 < count) {
-      addToQueue(index + 10);
-    }
-    const currentRow = Math.floor(index / 10)
-    const leftRow = Math.floor((index - 1) / 10)
-    const rightRow = Math.floor((index + 1) / 10)
-
-    if (currentRow === leftRow) {
-      addToQueue(index - 1);
-    }
-    if (currentRow === rightRow) {
-      addToQueue(index + 1);
+  
+  /**
+   * Resets all visited and queued up tiles only
+   */
+  const handleSoftReset = () => {
+    if (!spawned) return;
+    setRunning(false);
+    for(let i = 0; i < tileCount; i++) {
+      if (refs.current[i] === null) continue;
+      refs.current[i].softReset();
     }
   }
-
+  
+  /**
+   * Resets ALL tiles
+   */
   const handleReset = () => {
-    visited = [];
-    for(let i = 0; i < count; i++) {
+    if (!spawned) return;
+    setStart(-1);
+    setEnd(-1);
+    setRunning(false);
+    for(let i = 0; i < tileCount; i++) {
+      if (refs.current[i] === null) continue;
       refs.current[i].reset();
     }
   }
 
-  return (
-    // <Stack className='flex items-center justify-center'>
-    //   {/* <Box className='mt-10 font-text'>
-    //     more algorithms to be implemented...
-    //   </Box> */}
-    //   <Button onClick={handleSpawnTiles}>Spawn Tiles</Button>
-    //   <Box className='w-[30rem] flex flex-wrap'>
-    //     {
-    //       tiles.map((tile, index) => (
-    //         <Box onClick={() => handleVisit(index)}>
-    //           <Tile id={tile} ref={(element) => refs.current[index] = element}/>
-    //         </Box>
-    //       ))
-    //     }
-    //   </Box>
-    //   <Button onClick={handleReset}>Reset Board!</Button>
-    // </Stack>
-    <div>
+  /**
+   * Customises the property of the specified tile
+   * @param {Number} index 
+   */
+  const handleVisit = (index) => {
+    if (mode === 'start') {
+      if (start !== -1) {
+        refs.current[start].reset();
+      }
+      refs.current[index].setStart();
+      setStart(index);
+    } else if (mode === 'end') {
+      if (end !== -1) {
+        refs.current[end].reset();
+      }
+      refs.current[index].setEnd();
+      setEnd(index);
+    } else if (mode === 'wall') {
+      refs.current[index].markWall();
+    } else if (mode === 'destroy') {
+      refs.current[index].reset();
+    }
+  }
 
-    </div>
+  /**
+   * Adding drag and select functionality to board customization
+   */
+  const [dragging, setDragging] = useState(false);
+  const beginDragging = () => {
+    setDragging(true);
+  };
+  const stopDragging = () => {
+    setDragging(false);
+  };
+  const handleHovered = (index) => {
+    if(!dragging) {
+      return;
+    }
+    if (mode === 'wall') {
+      refs.current[index].markWall();
+    } else if (mode === 'destroy') {
+      refs.current[index].reset();
+    }
+  }
+  
+  
+  /**
+   * Given the index of a tile, returns all adjacent tiles in the form of their index number
+   * @param {Number} index 
+   * @returns {Array[Number]}
+   */
+  const getAdjacentTiles = (index) => {
+    const adjacent = [];
+    const topAdjacent = index - rowLength;
+    const botAdjacent = index + rowLength;
+    const leftAdjacent = index - 1;
+    const rightAdjacent = index + 1;
+    
+    if (topAdjacent >= 0 && !refs.current[topAdjacent].isWall()) {
+      adjacent.push(topAdjacent);
+    };
+    if (botAdjacent < tileCount && !refs.current[botAdjacent].isWall()) {
+      adjacent.push(botAdjacent);
+    };
+    
+    const currentRow = Math.floor(index / rowLength)
+    const leftRow = Math.floor((leftAdjacent) / rowLength)
+    const rightRow = Math.floor((rightAdjacent) / rowLength)
+    
+    if (currentRow === leftRow && !refs.current[leftAdjacent].isWall()) {
+      adjacent.push(leftAdjacent);
+    };
+    if (currentRow === rightRow && !refs.current[rightAdjacent].isWall()) {
+      adjacent.push(rightAdjacent);
+    }
+
+    // Array is [TOP, BOTTOM, LEFT, RIGHT]
+    // Order of being read is RIGHT, LEFT, BOTTOM, TOP
+    return adjacent;
+  }
+
+  const [algorithm, setAlgorithm] = useState('dfs');
+  const cycleAlgos = () => {
+    if (algorithm === 'dfs') {
+      setAlgorithm('bfs');
+    } else if (algorithm === 'bfs') {
+      setAlgorithm('dfs');
+    }
+    handleSoftReset();
+  }
+
+  /**
+   * Runs the pathfinding algorithm
+   * @returns 
+   */
+  const handleRun = async () => {
+    handleSoftReset();
+    if (start === -1 || end === -1) {
+      return;
+    }
+    // Setup
+    setRunning(true);
+    const visited = [];
+    const queue = [];
+    let adjacent = [];
+    queue.push(start);
+    
+    // 1. Iterate through queue and find adjacent of adjacent
+    while (queue.length > 0 && runningRef.current) {
+      // 2. Get the next tile to check, if the new tile has been visited, skip. Otherwise, visit it
+      let currentTile = queue.pop();
+      if (!visited.includes(currentTile)) {
+        visited.push(currentTile);
+        refs.current[currentTile].visit();
+      } else {
+        continue;
+      }
+
+      // 3. If the new tile is the end point, stop the loop
+      if (currentTile === end) break;
+
+      // 4. Get the adjacent tiles of the new tile
+      adjacent = getAdjacentTiles(currentTile);
+      for (const tile in adjacent) {
+        // 5. Iterate through the adjacent tiles, if we have visited them, skip
+        const adjacentTile = adjacent[tile];
+        if (!visited.includes(adjacentTile)) {
+          await sleep(ANIMATIONDELAY);
+          queue.push(adjacentTile)
+          refs.current[adjacentTile].addToQueue();
+        };
+      }
+      await sleep(ANIMATIONDELAY);
+      // 6. Repeat.
+    }
+    setRunning(false);
+  }
+
+  /**
+   * Stops the pathfinding algorithm
+   * DOES NOT reset the board!
+   */
+  const handleAbort = () => {
+    setRunning(false);
+  }
+
+  return (
+    <Stack className='flex items-center justify-center'>
+      <Box className='flex items-center'>
+        {(algorithm === 'dfs') &&
+          <p className='font-title text-6xl my-2'>
+            Depth-First Search
+          </p>
+        }
+        {(algorithm === 'bfs') &&
+          <Tooltip title='TO BE IMPLEMENTED!'>
+            <p className='font-title text-6xl my-2'>
+              Breadth-First Search
+            </p>
+          </Tooltip>
+        }
+        <Box className='ml-3 h-fit hover:animate-spin' onClick={cycleAlgos}>
+          <IconButton>
+            <ChangeCircleRoundedIcon />
+          </IconButton>
+        </Box>
+      </Box>
+      {
+        !spawned &&
+        <FunctionButton key='spawn-button' text={'Create Tiles'} onClick={handleSpawnTiles}/>
+      }
+
+      {/* Tileboard */}
+      <Box className='w-fit max-w-[80%] flex flex-wrap overflow-hidden justify-center my-2 select-none'
+        onMouseDown={beginDragging}
+        onMouseUp={stopDragging}
+      >
+        {
+          tiles.map((tile, index) => (
+            <div onMouseOver={() => handleHovered(index)}>
+              <Box onClick={() => handleVisit(index)}>
+                <Tile id={tile} ref={(element) => refs.current[index] = element}/>
+              </Box>
+            </div>
+          ))
+        }
+      </Box>
+
+      {/* Control Panel */}
+      {
+        !runningRef.current ?
+        <Stack direction='row' className='flex justify-center align-middle items-center m-1'>
+          <FunctionButton text={'Reset Board!'} onClick={handleReset}/>
+          <ToggleButtonGroup value={mode} exclusive onChange={handleMode} size='small'>
+            <Tooltip title='Set Start Point'>
+              <ToggleButton value="start">
+                <FlagIcon color='success'/>
+              </ToggleButton>
+            </Tooltip>
+            <Tooltip title='Set End Point'>
+              <ToggleButton value="end">
+                <FlagIcon color='error'/>
+              </ToggleButton>
+            </Tooltip>
+            <Tooltip title='Set Walls'>
+              <ToggleButton value="wall">
+                <ShieldIcon/>
+              </ToggleButton>
+            </Tooltip>
+            <Tooltip title='Remove Walls'>
+              <ToggleButton value="destroy">
+                <GppBadIcon/>
+              </ToggleButton>
+            </Tooltip>
+          </ToggleButtonGroup>
+          <FunctionButton text={'Run Algorithm'} onClick={handleRun}/>
+        </Stack> :
+        <FunctionButton text={'Stop'} onClick={handleAbort}/>
+      }
+    </Stack>
   )
 }
 

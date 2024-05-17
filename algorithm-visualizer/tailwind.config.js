@@ -9,7 +9,18 @@ module.exports = {
       'text': ['Metropolis Regular'],
       'button-text': ['Metropolis Medium'],
     },
-    extend: {},
+    extend: {
+      height: {
+        'TILE': '20px',
+        'BOARD': '480px',
+      },
+      width: {
+        'TILE': '20px',
+      },
+      animation: {
+        'spinOnce': 'spin 1s ease-in-out once',
+      }
+    },
   },
   plugins: [],
 }
