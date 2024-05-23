@@ -12,6 +12,8 @@ import useWindowDimensions from '../components/CustomHooks'
 import { ANIMATIONDELAY, MAXBOARDHEIGHT, NETTILESIZE } from '../components/Constants'
 import FunctionButton from '../components/FunctionButton'
 import sleep from '../components/HelperFunctions';
+import StackADT from '../components/StackADT';
+import QueueADT from '../components/QueueADT';
 
 
 const Pathfinding = () => {
@@ -168,12 +170,15 @@ const Pathfinding = () => {
     return adjacent;
   }
 
-  const [algorithm, setAlgorithm] = useState('dfs');
+  /**
+   * Cycle through different algorithms
+   */
+  const [algorithm, setAlgorithm] = useState('Depth-First Search');
   const cycleAlgos = () => {
-    if (algorithm === 'dfs') {
-      setAlgorithm('bfs');
-    } else if (algorithm === 'bfs') {
-      setAlgorithm('dfs');
+    if (algorithm === 'Depth-First Search') {
+      setAlgorithm('Breadth-First Search');
+    } else if (algorithm === 'Breadth-First Search') {
+      setAlgorithm('Depth-First Search');
     }
     handleSoftReset();
   }
@@ -190,14 +195,16 @@ const Pathfinding = () => {
     // Setup
     setRunning(true);
     const visited = [];
-    const queue = [];
     let adjacent = [];
-    queue.push(start);
+
+    let toVisit = new StackADT();
+    if (algorithm === 'Breadth-First Search') toVisit = new QueueADT();
+    toVisit.add(start);
     
     // 1. Iterate through queue and find adjacent of adjacent
-    while (queue.length > 0 && runningRef.current) {
+    while (toVisit.length() > 0 && runningRef.current) {
       // 2. Get the next tile to check, if the new tile has been visited, skip. Otherwise, visit it
-      let currentTile = queue.pop();
+      let currentTile = toVisit.getNext();
       if (!visited.includes(currentTile)) {
         visited.push(currentTile);
         refs.current[currentTile].visit();
@@ -215,7 +222,7 @@ const Pathfinding = () => {
         const adjacentTile = adjacent[tile];
         if (!visited.includes(adjacentTile)) {
           await sleep(ANIMATIONDELAY);
-          queue.push(adjacentTile)
+          toVisit.add(adjacentTile);
           refs.current[adjacentTile].addToQueue();
         };
       }
@@ -236,18 +243,9 @@ const Pathfinding = () => {
   return (
     <Stack className='flex items-center justify-center'>
       <Box className='flex items-center'>
-        {(algorithm === 'dfs') &&
-          <p className='font-title text-6xl my-2'>
-            Depth-First Search
-          </p>
-        }
-        {(algorithm === 'bfs') &&
-          <Tooltip title='TO BE IMPLEMENTED!'>
-            <p className='font-title text-6xl my-2'>
-              Breadth-First Search
-            </p>
-          </Tooltip>
-        }
+        <p className='font-title text-6xl my-2'>
+          {algorithm}
+        </p>
         <Box className='ml-3 h-fit hover:animate-spin' onClick={cycleAlgos}>
           <IconButton>
             <ChangeCircleRoundedIcon />
