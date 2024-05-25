@@ -23,6 +23,7 @@ const Pathfinding = () => {
   const [rowLength, setRowLength] = useState(0);
   const [tileCount, setTileCount] = useState(0);
   useEffect(() => {
+    handleReset();
     const rows = Math.floor((0.8 * width)/ NETTILESIZE);
     const cols = Math.floor(MAXBOARDHEIGHT/ NETTILESIZE);
     const tiles = rows * cols;
@@ -184,10 +185,21 @@ const Pathfinding = () => {
   }
 
   /**
+   * Keeps track of time spent running the algorithm
+   */
+  const [timeSpent, setTimeSpent] = useState(0.00);
+  const updateTimer = (startTime) => {
+    let currentTime = performance.now();
+    const duration = (currentTime - startTime) / 1000;
+    setTimeSpent(duration.toFixed(2));
+  }
+
+  /**
    * Runs the pathfinding algorithm
    * @returns 
    */
   const handleRun = async () => {
+    let startTime = performance.now();
     handleSoftReset();
     if (start === -1 || end === -1) {
       return;
@@ -196,6 +208,9 @@ const Pathfinding = () => {
     setRunning(true);
     const visited = [];
     let adjacent = [];
+    
+    const backtrack = [tileCount];
+    let previousTile = start;
 
     let toVisit = new StackADT();
     if (algorithm === 'Breadth-First Search') toVisit = new QueueADT();
@@ -208,12 +223,14 @@ const Pathfinding = () => {
       if (!visited.includes(currentTile)) {
         visited.push(currentTile);
         refs.current[currentTile].visit();
+        // backtrack[currentTile] = previousTile;
       } else {
         continue;
       }
-
+      
       // 3. If the new tile is the end point, stop the loop
       if (currentTile === end) break;
+      previousTile = currentTile;
 
       // 4. Get the adjacent tiles of the new tile
       adjacent = getAdjacentTiles(currentTile);
@@ -224,12 +241,20 @@ const Pathfinding = () => {
           await sleep(ANIMATIONDELAY);
           toVisit.add(adjacentTile);
           refs.current[adjacentTile].addToQueue();
+          backtrack[adjacentTile] = currentTile;
         };
       }
       await sleep(ANIMATIONDELAY);
       // 6. Repeat.
     }
+    // 7. Backtrack.
+    while (previousTile !== start) {
+      refs.current[previousTile].backtrack();
+      previousTile = backtrack[previousTile];
+      await sleep(ANIMATIONDELAY);
+    }
     setRunning(false);
+    updateTimer(startTime);
   }
 
   /**
@@ -252,6 +277,11 @@ const Pathfinding = () => {
           </IconButton>
         </Box>
       </Box>
+      {spawned &&
+        <p className='font-text text-1xl'>
+          {`Time taken: ${timeSpent}s`}
+        </p>
+      }
       {
         !spawned &&
         <FunctionButton key='spawn-button' text={'Create Tiles'} onClick={handleSpawnTiles}/>
