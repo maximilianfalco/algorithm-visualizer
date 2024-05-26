@@ -49,6 +49,7 @@ const Tile = forwardRef(function Tile(props, ref) {
         return specialRef.current;
       },
       backtrack () {
+        if (special || wall) return;
         setBackground(HIGHLIGHT);
       }
     };

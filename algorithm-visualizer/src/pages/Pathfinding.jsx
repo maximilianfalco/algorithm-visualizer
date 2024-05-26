@@ -148,26 +148,28 @@ const Pathfinding = () => {
     const leftAdjacent = index - 1;
     const rightAdjacent = index + 1;
     
-    if (topAdjacent >= 0 && !refs.current[topAdjacent].isWall()) {
-      adjacent.push(topAdjacent);
-    };
-    if (botAdjacent < tileCount && !refs.current[botAdjacent].isWall()) {
-      adjacent.push(botAdjacent);
-    };
-    
     const currentRow = Math.floor(index / rowLength)
     const leftRow = Math.floor((leftAdjacent) / rowLength)
     const rightRow = Math.floor((rightAdjacent) / rowLength)
+
+    if (topAdjacent >= 0 && !refs.current[topAdjacent].isWall()) {
+      adjacent.push(topAdjacent);
+    }
+
+    if (botAdjacent < tileCount && !refs.current[botAdjacent].isWall()) {
+      adjacent.push(botAdjacent);
+    }
     
     if (currentRow === leftRow && !refs.current[leftAdjacent].isWall()) {
       adjacent.push(leftAdjacent);
-    };
+    }
+
     if (currentRow === rightRow && !refs.current[rightAdjacent].isWall()) {
       adjacent.push(rightAdjacent);
     }
 
-    // Array is [TOP, BOTTOM, LEFT, RIGHT]
-    // Order of being read is RIGHT, LEFT, BOTTOM, TOP
+    // Array returned [TOP, BOTTOM, LEFT, RIGHT]
+    // Order of being read is backwards => RIGHT, LEFT, BOTTOM, TOP
     return adjacent;
   }
 
@@ -212,9 +214,12 @@ const Pathfinding = () => {
     const backtrack = [tileCount];
     let previousTile = start;
 
+    // Deciding which algorithm to go with
     let toVisit = new StackADT();
     if (algorithm === 'Breadth-First Search') toVisit = new QueueADT();
+
     toVisit.add(start);
+    let finished = false;
     
     // 1. Iterate through queue and find adjacent of adjacent
     while (toVisit.length() > 0 && runningRef.current) {
@@ -229,8 +234,11 @@ const Pathfinding = () => {
       }
       
       // 3. If the new tile is the end point, stop the loop
-      if (currentTile === end) break;
       previousTile = currentTile;
+      if (currentTile === end) {
+        finished = true;
+        break;
+      }
 
       // 4. Get the adjacent tiles of the new tile
       adjacent = getAdjacentTiles(currentTile);
@@ -248,7 +256,7 @@ const Pathfinding = () => {
       // 6. Repeat.
     }
     // 7. Backtrack.
-    while (previousTile !== start) {
+    while (previousTile !== start && finished) {
       refs.current[previousTile].backtrack();
       previousTile = backtrack[previousTile];
       await sleep(ANIMATIONDELAY);
