@@ -1,7 +1,7 @@
 {
   "files": {
     "main.css": "/algorithm-visualizer/static/css/main.f6762643.css",
-    "main.js": "/algorithm-visualizer/static/js/main.5b7d7163.js",
+    "main.js": "/algorithm-visualizer/static/js/main.ed129775.js",
     "static/js/453.16ab2dd2.chunk.js": "/algorithm-visualizer/static/js/453.16ab2dd2.chunk.js",
     "static/media/Metropolis-Bold.otf": "/algorithm-visualizer/static/media/Metropolis-Bold.c5e04fafcff6fc79cd76.otf",
     "static/media/Metropolis-SemiBold.otf": "/algorithm-visualizer/static/media/Metropolis-SemiBold.5e856013947c22fbcdf4.otf",
@@ -10,11 +10,11 @@
     "static/media/linkedin_icon.png": "/algorithm-visualizer/static/media/linkedin_icon.73ca25087df5a0d8500e.png",
     "index.html": "/algorithm-visualizer/index.html",
     "main.f6762643.css.map": "/algorithm-visualizer/static/css/main.f6762643.css.map",
-    "main.5b7d7163.js.map": "/algorithm-visualizer/static/js/main.5b7d7163.js.map",
+    "main.ed129775.js.map": "/algorithm-visualizer/static/js/main.ed129775.js.map",
     "453.16ab2dd2.chunk.js.map": "/algorithm-visualizer/static/js/453.16ab2dd2.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.f6762643.css",
-    "static/js/main.5b7d7163.js"
+    "static/js/main.ed129775.js"
   ]
 }
