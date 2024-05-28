@@ -134,44 +134,6 @@ const Pathfinding = () => {
       refs.current[index].reset();
     }
   }
-  
-  
-  /**
-   * Given the index of a tile, returns all adjacent tiles in the form of their index number
-   * @param {Number} index 
-   * @returns {Array[Number]}
-   */
-  const getAdjacentTiles = (index) => {
-    const adjacent = [];
-    const topAdjacent = index - rowLength;
-    const botAdjacent = index + rowLength;
-    const leftAdjacent = index - 1;
-    const rightAdjacent = index + 1;
-    
-    const currentRow = Math.floor(index / rowLength)
-    const leftRow = Math.floor((leftAdjacent) / rowLength)
-    const rightRow = Math.floor((rightAdjacent) / rowLength)
-
-    if (topAdjacent >= 0 && !refs.current[topAdjacent].isWall()) {
-      adjacent.push(topAdjacent);
-    }
-
-    if (botAdjacent < tileCount && !refs.current[botAdjacent].isWall()) {
-      adjacent.push(botAdjacent);
-    }
-    
-    if (currentRow === leftRow && !refs.current[leftAdjacent].isWall()) {
-      adjacent.push(leftAdjacent);
-    }
-
-    if (currentRow === rightRow && !refs.current[rightAdjacent].isWall()) {
-      adjacent.push(rightAdjacent);
-    }
-
-    // Array returned [TOP, BOTTOM, LEFT, RIGHT]
-    // Order of being read is backwards => RIGHT, LEFT, BOTTOM, TOP
-    return adjacent;
-  }
 
   /**
    * Cycle through different algorithms
@@ -194,6 +156,44 @@ const Pathfinding = () => {
     let currentTime = performance.now();
     const duration = (currentTime - startTime) / 1000;
     setTimeSpent(duration.toFixed(2));
+  }
+
+  
+  /**
+   * Given the index of a tile, returns all adjacent tiles in the form of their index number
+   * @param {Number} index 
+   * @returns {Array[Number]}
+   */
+  const getAdjacentTiles = (index) => {
+    const adjacent = [];
+    const topAdjacent = index - rowLength;
+    const botAdjacent = index + rowLength;
+    const leftAdjacent = index - 1;
+    const rightAdjacent = index + 1;
+    
+    const currentRow = Math.floor(index / rowLength)
+    const leftRow = Math.floor((leftAdjacent) / rowLength)
+    const rightRow = Math.floor((rightAdjacent) / rowLength)
+
+    if (topAdjacent >= 0 && !refs.current[topAdjacent].isWall()) {
+      adjacent.push(topAdjacent);
+    }
+    
+    if (currentRow === leftRow && !refs.current[leftAdjacent].isWall()) {
+      adjacent.push(leftAdjacent);
+    }
+    
+    if (botAdjacent < tileCount && !refs.current[botAdjacent].isWall()) {
+      adjacent.push(botAdjacent);
+    }
+
+    if (currentRow === rightRow && !refs.current[rightAdjacent].isWall()) {
+      adjacent.push(rightAdjacent);
+    }
+
+    // Array returned [TOP, LEFT, BOTTOM, RIGHT]
+    // Order of being read is backwards => RIGHT, BOTTOM, LEFT, TOP
+    return adjacent;
   }
 
   /**
